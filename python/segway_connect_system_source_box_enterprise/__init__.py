@@ -29,6 +29,8 @@ class EventStream(LogSource):
         self._client = None
         self.auth()
         logger.info("Authentication complete")
+        self.persist = Persist("EventStream", defaults={"stream_position": 0})
+        logger.info(f"Resuming collection at stream_position={self.persist}")        
         return True
     
     def auth(self):
@@ -46,8 +48,6 @@ class EventStream(LogSource):
     
     def run(self):
         """Simple Run method to create the loop"""
-        self.persist = Persist("EventStream", defaults={"stream_position": 0})
-        logger.info(f"Resuming collection at stream_position={self.persist}")        
         asyncio.run(self.receive_batch())
 
     async def receive_batch(self):
