@@ -161,5 +161,5 @@ cython_debug/
 
 !etc/syslog-ng/conf.d/plugin/lib/
 .values-test.yaml
-python/data.json
+python/box.json
 python/box_enterprise_source/demo.py

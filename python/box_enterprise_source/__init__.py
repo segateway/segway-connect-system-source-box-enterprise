@@ -17,7 +17,7 @@ from syslogng import Persist
 
 logger = Logger()
 
-config_path = os.environ.get("SEGWAY_CONFIG_PATH", "")
+config_path = os.environ.get("SEGWAY_BOX_SECRET_PATH", "")
     
 class EventStream(LogSource):
     """Provides a syslog-ng async source for Microsoft Event hub"""
@@ -28,12 +28,14 @@ class EventStream(LogSource):
     def init(self, options):
         self._client = None
         self.auth()
+        logger.info("Authentication complete")
         self.persist = Persist("EventStream", defaults={"stream_position": 0})
-        
+        logger.info(f"Resuming collection at stream_position={self.persist}")        
         return True
     
     def auth(self):
-            f = open('data.json')
+            path = os.join(config_path,'box.json')
+            f = open(path)
             self.auth_dict = json.load(f)
             f.close()
             try:
@@ -59,7 +61,7 @@ class EventStream(LogSource):
             # self.cancelled = True
             # try:
             box_response = self._get_events(params)
-            events = clean_event(box_response)
+            events = EventStream.clean_event(box_response)
             for event in box_response:
                 record_lmsg = LogMessage(event)
                 self.post_message(record_lmsg)
@@ -67,12 +69,17 @@ class EventStream(LogSource):
             if box_response['next_stream_position'] and int(box_response['next_stream_position'])>0:
                 self.persist['stream_position'] = box_response['next_stream_position']
                 params['stream_position']=box_response['next_stream_position']
+                logger.info(f"Posted count={len(events)} next_stream_position={params['stream_position']}")
 
+    def backoff_hdlr(details):
+        logger.info("Backing off {wait:0.1f} seconds after {tries} tries "
+            "calling function {target} with args {args} and kwargs "
+            "{kwargs}".format(**details))        
                                         
     @backoff.on_exception(backoff.expo,
                     (requests.exceptions.Timeout,
-                    requests.exceptions.ConnectionError),max_time=300)
-    @backoff.on_predicate(backoff.expo, lambda x: x['entries'] == [],max_time=300)
+                    requests.exceptions.ConnectionError),max_time=300,on_backoff=backoff_hdlr)
+    @backoff.on_predicate(backoff.expo, lambda x: x['entries'] == [],max_time=300,on_backoff=backoff_hdlr)
     def _get_events(self,params):
         box_response = self._client.make_request(
             'GET',
@@ -82,7 +89,7 @@ class EventStream(LogSource):
         )
         result = box_response.json()
         return result 
-        
+    
     
 
     @staticmethod
