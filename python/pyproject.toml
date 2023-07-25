@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "segway-connect-system-source-box-enterprise"
+version = "0.1.0"
+description = ""
+authors = ["Ryan Faircloth <ryan@dss-i.com>"]
+license = "Apache-2.0"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+flatten-dict = "^0.4.2"
+boxsdk = {version = "^3.7.3", extras = ["jwt"]}
+backoff = "^2.2.1"
+orjson = "^3.9.2"
+
+[tool.poetry.dev-dependencies]
+black = "^23.7.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
