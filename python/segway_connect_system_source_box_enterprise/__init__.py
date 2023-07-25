@@ -34,7 +34,7 @@ class EventStream(LogSource):
         return True
     
     def auth(self):
-            path = os.join(config_path,'box.json')
+            path = os.path.join(config_path,'box.json')
             f = open(path)
             self.auth_dict = json.load(f)
             f.close()
