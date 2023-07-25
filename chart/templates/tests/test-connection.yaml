@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "segway-sys-source-ms-azure-eventhub.fullname" . }}-test-connection"
+  labels:
+    {{- include "segway-sys-source-ms-azure-eventhub.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "segway-sys-source-ms-azure-eventhub.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never
