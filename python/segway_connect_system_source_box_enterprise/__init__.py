@@ -62,25 +62,31 @@ class EventStream(LogSource):
             # self.cancelled = True
             # try:
             box_response = self._get_events(params)
-            events = EventStream.clean_event(box_response)
-            for event in box_response:
+            entries = box_response['entries']
+            for entry in entries:
+                event = EventStream.clean_event(entry)
                 record_lmsg = LogMessage(event)
                 self.post_message(record_lmsg)
+                
+            self.persist['stream_position'] = box_response['next_stream_position']
+            params['stream_position']=box_response['next_stream_position']
+            logger.info(f"Posted count={len(entries)} next_stream_position={params['stream_position']}")
 
-            if box_response['next_stream_position'] and int(box_response['next_stream_position'])>0:
-                self.persist['stream_position'] = box_response['next_stream_position']
-                params['stream_position']=box_response['next_stream_position']
-                logger.info(f"Posted count={len(events)} next_stream_position={params['stream_position']}")
-
-    def backoff_hdlr(details):
+    def backoff_hdlr_exp(details):
         logger.info("Backing off {wait:0.1f} seconds after {tries} tries "
-            "calling function {target} with args {args} and kwargs "
-            "{kwargs}".format(**details))        
+            "with args {args}"
+            .format(**details))
+        
+    def backoff_hdlr_pred(details):
+        logger.info("Backing off {wait:0.1f} seconds after {tries} tries "
+            "with args {args} result {value}"
+            .format(**details))
+
                                         
     @backoff.on_exception(backoff.expo,
                     (requests.exceptions.Timeout,
-                    requests.exceptions.ConnectionError),max_time=300,on_backoff=backoff_hdlr)
-    @backoff.on_predicate(backoff.expo, lambda x: x['entries'] == [],max_time=300,on_backoff=backoff_hdlr)
+                    requests.exceptions.ConnectionError),max_time=300,on_backoff=backoff_hdlr_exp)
+    @backoff.on_predicate(backoff.expo, lambda x: x['entries'] == [],max_time=300,on_backoff=backoff_hdlr_pred)
     def _get_events(self,params):
         box_response = self._client.make_request(
             'GET',
