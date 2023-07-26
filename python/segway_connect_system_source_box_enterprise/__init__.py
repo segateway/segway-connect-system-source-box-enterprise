@@ -18,13 +18,14 @@ from syslogng import Persist
 logger = Logger()
 
 config_path = os.environ.get("SEGWAY_BOX_SECRET_PATH", "")
-    
+MAX_CHUNK_SIZE: int = int(os.environ.get("SEGWAY_BOX_CHUNK_SIZE", "500"))
+
+
 class EventStream(LogSource):
     """Provides a syslog-ng async source for Microsoft Event hub"""
 
     cancelled: bool = False
-    
-    
+        
     def init(self, options):
         self._client = None
         self.auth()
@@ -52,7 +53,7 @@ class EventStream(LogSource):
 
     async def receive_batch(self):
         params = {
-                    'limit': self._MAX_CHUNK_SIZE,
+                    'limit': MAX_CHUNK_SIZE,
                     'stream_type': EnterpriseEventsStreamType.ADMIN_LOGS,
                     'stream_position': self.persist['stream_position']
                 }
