@@ -65,7 +65,7 @@ class EventStream(LogSource):
             entries = box_response['entries']
             for entry in entries:
                 event = EventStream.clean_event(entry)
-                record_lmsg = LogMessage(event)
+                record_lmsg = LogMessage(orjson.dumps(event))
                 self.post_message(record_lmsg)
                 
             self.persist['stream_position'] = box_response['next_stream_position']
