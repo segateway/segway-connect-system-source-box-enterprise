@@ -73,13 +73,13 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "boxsdk"
-version = "3.8.0"
+version = "3.9.2"
 description = "Official Box Python SDK"
 optional = false
 python-versions = "*"
 files = [
-    {file = "boxsdk-3.8.0-py2.py3-none-any.whl", hash = "sha256:24e210b7d704159b4ef668e95737491f35a593026df96710d66070165d88357e"},
-    {file = "boxsdk-3.8.0.tar.gz", hash = "sha256:060cde0910988357b98ebdb09a5e25d6455e71fbb2741ec9e71d80895dca5728"},
+    {file = "boxsdk-3.9.2-py2.py3-none-any.whl", hash = "sha256:44087bc208d3082e0a791f98e491c2eccc61cd5123cedc96e52d089e12c5f410"},
+    {file = "boxsdk-3.9.2.tar.gz", hash = "sha256:10e23e2f82e9cff2b2e501b7ca7ffe7bac0e280d1cd4b2983dea95f826e3008b"},
 ]
 
 [package.dependencies]
@@ -89,7 +89,7 @@ pyjwt = {version = ">=1.7.0", optional = true, markers = "extra == \"jwt\""}
 python-dateutil = "*"
 requests = ">=2.4.3,<3"
 requests-toolbelt = ">=0.4.0"
-urllib3 = "<2"
+urllib3 = "*"
 
 [package.extras]
 coveralls = ["coveralls", "tox (<=3.28.0)"]
@@ -97,7 +97,7 @@ dev = ["tox (<=3.28.0)"]
 gh = ["tox (<=3.28.0)", "tox-gh-actions"]
 jwt = ["cryptography (>=3)", "pyjwt (>=1.7.0)"]
 redis = ["redis (>=2.10.3)"]
-test = ["bottle", "jsonpatch (>1.14)", "pytest", "pytest-cov", "pytest-lazy-fixture", "pytest-timeout", "pytz", "sqlalchemy (<1.4.0)"]
+test = ["bottle", "jsonpatch (>1.14)", "pytest", "pytest-cov", "pytest-lazy-fixture", "pytest-timeout", "pytz", "sqlalchemy (<1.4.0)", "urllib3 (<2)"]
 
 [[package]]
 name = "certifi"
@@ -601,4 +601,4 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "5d4387acea9b411e4b8752c000593c9ab1fcdcf6a7df8bc2d1dba420d793c26b"
+content-hash = "a0012fb6afb993683f27ea185b3377af8e3b6caaa2ddcf5290d77b472f415b51"
